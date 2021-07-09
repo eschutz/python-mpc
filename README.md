@@ -2,14 +2,13 @@
 A linear model predictive controller for a robot operating under linear and
 angular velocity and acceleration constraints.
 
-**This code was originally derived from [PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/model_predictive_speed_and_steer_control/model_predictive_speed_and_steer_control.py)**
-, which I highly recommend as an educational resource and a repository of many
+**This code was originally derived from [PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/model_predictive_speed_and_steer_control/model_predictive_speed_and_steer_control.py)**,
+which I highly recommend as an educational resource and a repository of many
 robotics algorithms in a variety of domains.
 
 ## Problem
 [Model predictive control](https://en.wikipedia.org/wiki/Model_predictive_control)
-seeks to solve the problem of 'how can inputs be applied to this system to
-control it optimally without violating constraints?' In this case, we consider a
+is a popular method of constrained optimal control. In this case, we consider a
 robot with a four-wheeled holonomic 'swerve' drivetrain operating in, for
 example, a lunar environment, where low gravity enables wheel slippage, inducing
 constraints on allowable acceleration.
@@ -51,7 +50,16 @@ where
 Given some initial state `z0` and a desired 'reference' path, we seek the optimal inputs `u` to apply to the system that minimises the deviation from the reference path. This controller was applied as part of a larger path planning system with linearly interpolated paths, so in this project a straight-line reference path is used, although it can be arbitrary.
 
 ## Solution
-For model predictive control, the system state for some inputs `u` is predicted `T` time steps into the future, where `T` is known as the 'horizon length'. The cost of the system subject to these inputs is as follows
+For model predictive control, the system state for some inputs `u` is predicted
+`T` time steps into the future, where `T` is known as the 'horizon length'.
+At each time step, the linearisation point z bar is given by the non-linear
+discrete-time prediction of the next state subject to the most recent inputs.
+```
+z_bar=z_k+f(z_k, u_k)*dt
+```
+Then for different inputs, at each time step the linearised discrete-time model is used to predict
+the state of the system at the next time step.
+The cost of the system subject to these inputs is as follows
 
 ![Cost function](doc/cost-function.jpg)
 
@@ -66,7 +74,7 @@ An additional extension on this method is to iteratively update the state predic
 Much of this derivation was originally derived from the [MPC modelling](https://pythonrobotics.readthedocs.io/en/latest/modules/path_tracking.html#mpc-modeling) section of the PythonRobotics documentation.
 
 ## Implementation
-A simple linearised model predictive control is implemented in `model_predictive_controller.py`. It simulates a robot with a 'swerve' drivetrain, a holonomic drivetrain where the angle and speed of each wheel can be independently controlled. A derivation of the inverse kinematics can be found in `doc/swerve.pdf`.
+A simple linearised model predictive controller is implemented in `model_predictive_controller.py`. It simulates a robot with a 'swerve' drivetrain, a holonomic drivetrain where the angle and speed of each wheel can be independently controlled. A derivation of the inverse kinematics can be found in `doc/swerve.pdf`.
 
 When this was implemented, the cameras used for object detection were on the front of the robot, so necessarily the strafe input had to be set to 0 so the robot would always face in its direction of motion.
 
