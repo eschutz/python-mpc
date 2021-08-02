@@ -916,7 +916,7 @@ def main():
     sim = MPCSimulator(mpc, ROBOT_PROPERTIES, initial_state, goal, save_animation=True)
     t, z, u, c, cv, e = sim.do_simulation()
 
-    if show_plots:  # pragma: no cover
+    if show_plots:
         plt.close("all")
         plt.figure(1)
         plt.plot(sim.ref_path[0, :], sim.ref_path[1, :], "-r", label="spline")
